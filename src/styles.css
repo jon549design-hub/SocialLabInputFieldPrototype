@@ -1,0 +1,335 @@
+/* ───────────────────────────  Design tokens  ─────────────────────────── */
+:root {
+  /* Warm "ivory" palette matching Claude's light theme */
+  --bg:            #faf9f5;
+  --surface:       #ffffff;
+  --user-bubble:   #f0eee6;
+  --text:          #1f1e1d;
+  --text-muted:    #73726c;
+  --text-faint:    #a3a299;
+  --border:        rgba(31, 30, 29, 0.10);
+  --border-strong: rgba(31, 30, 29, 0.16);
+  --hover:         rgba(31, 30, 29, 0.05);
+  --accent:        #d97757;   /* Claude coral */
+  --accent-text:   #ffffff;
+  --shadow:        0 2px 12px rgba(31, 30, 29, 0.06),
+                   0 1px 3px rgba(31, 30, 29, 0.04);
+
+  --font-sans: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI",
+               Roboto, Helvetica, Arial, sans-serif;
+  --font-serif: "Tiempos", Georgia, "Times New Roman", serif;
+
+  --composer-radius: 26px;
+  --max-width: 740px;
+}
+
+[data-theme="dark"] {
+  --bg:            #262624;
+  --surface:       #30302e;
+  --user-bubble:   #3a3a37;
+  --text:          #f5f4ee;
+  --text-muted:    #b4b3ac;
+  --text-faint:    #82817b;
+  --border:        rgba(255, 255, 255, 0.12);
+  --border-strong: rgba(255, 255, 255, 0.18);
+  --hover:         rgba(255, 255, 255, 0.07);
+  --shadow:        0 2px 14px rgba(0, 0, 0, 0.30);
+}
+
+/* ───────────────────────────────  Reset  ─────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body, #root { height: 100%; }
+
+body {
+  font-family: var(--font-sans);
+  background: var(--bg);
+  color: var(--text);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  overflow: hidden;
+}
+
+button { font-family: inherit; cursor: pointer; border: none; background: none; color: inherit; }
+
+/* ───────────────────────────────  Layout  ────────────────────────────── */
+.app {
+  display: flex;
+  flex-direction: column;
+  height: 100dvh;
+  width: 100%;
+}
+
+/* Slim top bar — kept minimal; the composer is the focus */
+.topbar {
+  flex: 0 0 auto;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 18px;
+}
+.topbar .brand {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--text-muted);
+}
+
+.icon-btn {
+  width: 36px; height: 36px;
+  display: grid; place-items: center;
+  border-radius: 9px;
+  color: var(--text-muted);
+  transition: background .15s ease, color .15s ease;
+}
+.icon-btn:hover { background: var(--hover); color: var(--text); }
+.icon-btn svg { width: 20px; height: 20px; }
+
+/* Scrollable conversation region */
+.main {
+  flex: 1 1 auto;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border-strong) transparent;
+}
+.main::-webkit-scrollbar { width: 8px; }
+.main::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 4px; }
+
+/* The centered column that holds the greeting, messages and composer. */
+.column {
+  width: 100%;
+  max-width: var(--max-width);
+  min-height: 100%;
+  margin: 0 auto;
+  padding: 0 24px;
+  display: flex;
+  flex-direction: column;
+}
+/* Empty state: centre the greeting + composer group vertically. */
+.column.is-empty { justify-content: center; }
+
+/* ─────────────────────  "New chat" greeting state  ───────────────────── */
+.greeting {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 22px;
+  margin-bottom: 26px;
+}
+.greeting .spark-lg { width: 46px; height: 46px; }
+.greeting h1 {
+  font-family: var(--font-serif);
+  font-weight: 400;
+  font-size: clamp(26px, 5vw, 34px);
+  letter-spacing: -0.01em;
+  text-align: center;
+}
+
+/* ───────────────────────────  Messages  ──────────────────────────────── */
+.messages {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  gap: 22px;
+  padding: 28px 0 12px;
+}
+
+.msg { display: flex; gap: 14px; align-items: flex-start; }
+
+/* User turn: right-aligned cream bubble */
+.msg.user { justify-content: flex-end; }
+.msg.user .bubble {
+  background: var(--user-bubble);
+  padding: 12px 16px;
+  border-radius: 16px 16px 4px 16px;
+  max-width: 78%;
+  line-height: 1.55;
+  font-size: 15.5px;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+
+/* Assistant turn: spark avatar + plain flowing text */
+.msg.assistant .avatar {
+  flex: 0 0 auto;
+  width: 26px; height: 26px;
+  display: grid; place-items: center;
+  margin-top: 1px;
+}
+.msg.assistant .avatar svg { width: 24px; height: 24px; }
+.msg.assistant .body {
+  line-height: 1.65;
+  font-size: 15.5px;
+  padding-top: 1px;
+  max-width: calc(100% - 40px);
+  white-space: pre-wrap;
+}
+
+/* Typing indicator (three pulsing dots) */
+.typing { display: inline-flex; gap: 4px; align-items: center; height: 24px; }
+.typing span {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: var(--text-faint);
+  animation: blink 1.2s infinite ease-in-out;
+}
+.typing span:nth-child(2) { animation-delay: .2s; }
+.typing span:nth-child(3) { animation-delay: .4s; }
+@keyframes blink { 0%, 60%, 100% { opacity: .25; } 30% { opacity: 1; } }
+
+/* ──────────────────────  Composer (the input field)  ─────────────────── */
+.composer-wrap {
+  flex: 0 0 auto;
+  width: 100%;
+}
+.composer-wrap.docked {
+  position: sticky;
+  bottom: 0;
+  padding-bottom: 18px;
+  background: linear-gradient(to bottom, transparent, var(--bg) 22%);
+}
+
+.composer {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--composer-radius);
+  box-shadow: var(--shadow);
+  padding: 14px 14px 10px;
+  transition: border-color .15s ease, box-shadow .15s ease;
+}
+.composer:focus-within {
+  border-color: var(--border-strong);
+  box-shadow: 0 4px 20px rgba(31, 30, 29, 0.10), 0 1px 3px rgba(31, 30, 29, 0.05);
+}
+
+/* The growing textarea */
+.composer textarea {
+  width: 100%;
+  border: none;
+  outline: none;
+  resize: none;
+  background: transparent;
+  color: var(--text);
+  font-size: 16px;
+  line-height: 1.5;
+  max-height: 220px;
+  padding: 4px 6px 6px;
+  font-family: inherit;
+}
+.composer textarea::placeholder { color: var(--text-faint); }
+
+/* Bottom toolbar inside the composer */
+.toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-top: 4px;
+}
+.toolbar .group { display: flex; align-items: center; gap: 6px; }
+
+/* Round bordered tool buttons */
+.tool {
+  height: 34px;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--text-muted);
+  border: 1px solid var(--border);
+  padding: 0 11px;
+  font-size: 14px;
+  transition: background .15s ease, color .15s ease, border-color .15s ease;
+}
+.tool.circle { width: 34px; padding: 0; justify-content: center; }
+.tool:hover { background: var(--hover); color: var(--text); border-color: var(--border-strong); }
+.tool svg { width: 18px; height: 18px; }
+
+/* Model selector */
+.model {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  height: 34px;
+  padding: 0 6px 0 10px;
+  border-radius: 999px;
+  color: var(--text-muted);
+  font-size: 14px;
+  transition: background .15s ease, color .15s ease;
+  white-space: nowrap;
+}
+.model:hover { background: var(--hover); color: var(--text); }
+.model .chev { width: 16px; height: 16px; }
+
+/* Send button — gray when empty, coral when there's text */
+.send {
+  width: 34px; height: 34px;
+  border-radius: 999px;
+  display: grid; place-items: center;
+  background: var(--border-strong);
+  color: var(--surface);
+  transition: background .15s ease, transform .12s ease, opacity .15s ease;
+}
+.send svg { width: 18px; height: 18px; }
+.send:disabled { cursor: default; opacity: .55; }
+.send.active { background: var(--accent); color: var(--accent-text); }
+.send.active:hover { transform: scale(1.06); }
+.send:active { transform: scale(0.94); }
+
+/* Helper line under the composer */
+.hint {
+  text-align: center;
+  font-size: 12px;
+  color: var(--text-faint);
+  margin-top: 9px;
+  min-height: 16px;
+}
+
+/* Dropdown menu (model picker) */
+.model-field { position: relative; }
+.menu {
+  position: absolute;
+  bottom: calc(100% + 8px);
+  right: 0;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  box-shadow: var(--shadow);
+  padding: 6px;
+  min-width: 230px;
+  z-index: 20;
+}
+.menu .item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  width: 100%;
+  text-align: left;
+  padding: 9px 11px;
+  border-radius: 9px;
+  font-size: 14px;
+  color: var(--text);
+}
+.menu .item:hover { background: var(--hover); }
+.menu .item small { display: block; color: var(--text-muted); font-size: 12px; margin-top: 2px; }
+.menu .item .check { width: 16px; height: 16px; color: var(--accent); opacity: 0; flex: 0 0 auto; }
+.menu .item.checked .check { opacity: 1; }
+
+/* ─────────────────────────────  Mobile  ──────────────────────────────── */
+@media (max-width: 640px) {
+  .column { padding: 0 14px; }
+  .greeting h1 { font-size: 24px; }
+  .greeting .spark-lg { width: 40px; height: 40px; }
+  .composer { border-radius: 22px; padding: 12px 12px 9px; }
+  .composer-wrap.docked { padding-bottom: max(14px, env(safe-area-inset-bottom)); }
+  .model .label-full { display: none; }   /* shorten model name */
+  .tool .label { display: none; }          /* icon-only tools on mobile */
+  .tool { padding: 0 9px; }
+  .msg.user .bubble { max-width: 86%; }
+}

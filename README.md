@@ -1,22 +1,22 @@
 # Social Lab — Input Field Prototype
 
 A faithful recreation of the Claude chat **composer** (the input field), with a
-minimal chat area around it. Built as a single self-contained `index.html` so
-each interaction experiment can be forked independently — no build step, no
-dependencies.
+minimal chat area around it — built in **React + Vite** as a base for
+interaction experiments.
 
 ## Run it
 
-Open `index.html` directly, or serve the folder:
-
 ```bash
-python3 -m http.server 4710
-# then visit http://localhost:4710
+npm install
+npm run dev      # http://localhost:5173
 ```
+
+Other scripts: `npm run build` (production bundle → `dist/`), `npm run preview`
+(serve the build).
 
 ## What's included
 
-- **New-chat state** — centered spark + greeting + composer.
+- **New-chat state** — centered spark + serif greeting + composer.
 - **Conversation state** — user bubbles, assistant replies with the spark
   avatar, a typing indicator, and the composer docked to the bottom.
 - **The composer** — auto-growing textarea, attach (`+`) and Tools buttons, a
@@ -24,17 +24,31 @@ python3 -m http.server 4710
 - **Responsive** — adapts for desktop and mobile (iOS-safe, no input zoom).
 - **Light & dark themes** — toggle in the top-right; all colors are CSS tokens.
 
-## Where to build your interactions
+## Project structure
 
-Everything lives in `index.html`:
+```
+src/
+  main.jsx                 app entry
+  App.jsx                  state: messages, model, theme
+  data.js                  MODELS list + respond() — the API stub
+  styles.css               design tokens + all styling
+  components/
+    Composer.jsx           ◀ the input field (the focus of this repo)
+    ModelPicker.jsx        model dropdown
+    Message.jsx            user / assistant turn + typing indicator
+    Greeting.jsx           new-chat welcome
+    icons.jsx              inline SVG icon set + Claude spark
+```
+
+## Where to build your interactions
 
 | What | Where |
 |------|-------|
-| Composer markup | `<form id="composer">` |
-| Send / message flow | `sendMessage()` in the `<script>` |
-| Fake assistant reply | `respond()` — swap for a real API call |
-| Colors & theme | `:root` and `[data-theme="dark"]` in the `<style>` |
-| Model list | the `MODELS` array |
+| The input field itself | `src/components/Composer.jsx` |
+| Send / message flow | `handleSend()` in `src/App.jsx` |
+| Fake assistant reply | `respond()` in `src/data.js` — swap for a real API |
+| Colors & theme | `:root` / `[data-theme="dark"]` in `src/styles.css` |
+| Model list | the `MODELS` array in `src/data.js` |
 
-> Replies are simulated. `respond()` echoes a canned line after a short delay —
+> Replies are simulated. `respond()` resolves a canned line after a short delay —
 > replace its body with a `fetch()` to wire up a real backend.
