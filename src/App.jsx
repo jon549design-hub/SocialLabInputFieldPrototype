@@ -2,6 +2,7 @@ import { lazy, Suspense, useEffect, useRef, useState } from 'react'
 import Greeting from './components/Greeting.jsx'
 import Message from './components/Message.jsx'
 import Composer from './components/Composer.jsx'
+import PrivacyNudge from './components/PrivacyNudge.jsx'
 import ThemeControl from './components/ThemeControl.jsx'
 import { ChatGPTMark, Spark } from './components/icons.jsx'
 import { DEFAULT_MODEL, DEFAULT_MODELS, MODEL_GROUPS, respond } from './data.js'
@@ -18,6 +19,7 @@ export default function App() {
     agentation: false,
     interfaceKit: false,
   })
+  const [privacy, setPrivacy] = useState({ status: 'idle', analysis: null }) // debounced privacy state
   const mainRef = useRef(null)
   const idRef = useRef(0)
 
@@ -129,6 +131,7 @@ export default function App() {
               placeholder={placeholder}
               productName={productName}
               productTheme={productTheme}
+              onPrivacyChange={setPrivacy}
               onAttach={() => console.log('[attach] open file picker')}
             />
             {!isConversation && (
@@ -137,6 +140,8 @@ export default function App() {
           </div>
         </div>
       </main>
+
+      <PrivacyNudge status={privacy.status} analysis={privacy.analysis} />
 
       <ThemeControl
         productTheme={productTheme}
