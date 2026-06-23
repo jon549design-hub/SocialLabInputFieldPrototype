@@ -113,7 +113,7 @@ function BottomBar({ onBack, backLabel = 'Back', onNext, nextLabel = 'Continue',
 
 const RULE_DROPDOWN_OPTIONS = [
   { rule: 'ask',   label: 'Nudge me',        caption: 'Visually remind me every time' },
-  { rule: 'share', label: 'No need to nudge', caption: 'No reminder needed'            },
+  { rule: 'share', label: 'No nudge', caption: 'No reminder needed'            },
 ]
 
 // ─── Screen 2A — Design A: Chevron / rule-label list ────────────────────────
@@ -128,7 +128,7 @@ function Screen2A({ rules, onSelectCat, onSetRule, onContinue, onBack, dark, dot
   const mainCats = CATS.filter((c) => c.main)
   const moreCats = CATS.filter((c) => !c.main)
 
-  const DISPLAY_RULE = { ask: 'Nudge me', share: 'No need to nudge', never: 'No need to nudge' }
+  const DISPLAY_RULE = { ask: 'Nudge me', share: 'No nudge', never: 'No nudge' }
 
   const moreLabel = useMemo(() => {
     const vals = moreCats.map((c) => rules[c.id])
@@ -441,7 +441,7 @@ function Screen3NeverPicker({ rules, onToggle, onContinue, dark, dotInfo }) {
 function CategorySheet({ cat, rule, onSelect }) {
   const options = [
     { rule: 'ask',   label: 'Nudge me',        caption: 'Visually remind me every time' },
-    { rule: 'share', label: 'No need to nudge', caption: 'No reminder needed'            },
+    { rule: 'share', label: 'No nudge', caption: 'No reminder needed'            },
   ]
   return (
     <div style={{ paddingTop: 16, paddingBottom: 40 }}>
@@ -491,7 +491,7 @@ function Screen4({ rules, onEdit, onContinue, dark, dotInfo }) {
 
   const sections = [
     { rule: 'ask',   label: 'Nudge me'        },
-    { rule: 'share', label: 'No need to nudge' },
+    { rule: 'share', label: 'No nudge' },
   ]
 
   const byRule = useMemo(() => {
