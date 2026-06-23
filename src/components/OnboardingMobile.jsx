@@ -65,30 +65,44 @@ function IOSToggle({ on, onToggle, dark }) {
 
 // ─── Bottom nav bar (all viewports) ─────────────────────────────────────────
 
-function BottomBar({ onBack, backLabel = 'Back', onNext, nextLabel = 'Continue', dark }) {
+function BottomBar({ onBack, backLabel = 'Back', onNext, nextLabel = 'Continue', dark, dotInfo }) {
   return (
     <div style={{
       position: 'absolute', bottom: 0, left: 0, right: 0, zIndex: 20,
-      paddingBottom: 48, paddingTop: 16,
+      paddingBottom: 20, paddingTop: 12,
       background: dark ? 'rgba(0,0,0,0.88)' : 'rgba(242,242,247,0.88)',
       backdropFilter: 'blur(28px)',
       WebkitBackdropFilter: 'blur(28px)',
       borderTop: dark ? '1px solid rgba(255,255,255,0.07)' : '1px solid rgba(0,0,0,0.06)',
     }}>
+      {dotInfo && (
+        <div style={{ display: 'flex', justifyContent: 'center', gap: 6, marginBottom: 14 }}>
+          {dotInfo.screens.map((s) => (
+            <button key={s} onClick={() => dotInfo.onNav(s)} style={{
+              width: dotInfo.current === s ? 24 : 8, height: 8, borderRadius: 4,
+              background: dotInfo.current === s
+                ? (dark ? 'rgba(255,255,255,0.7)' : 'rgba(0,0,0,0.5)')
+                : (dark ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.18)'),
+              transition: 'width 0.2s ease',
+              flexShrink: 0, border: 'none', cursor: 'pointer',
+            }} />
+          ))}
+        </div>
+      )}
       <div className="onboarding-inner" style={{ display: 'flex', gap: 12 }}>
         {onBack && (
           <button onClick={onBack} style={{
-            flex: 1, height: 54, borderRadius: 9999,
+            flex: 1, height: 44, borderRadius: 9999,
             background: dark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.07)',
             color: dark ? '#ffffff' : '#000000',
-            fontSize: 17, fontWeight: 600, border: 'none', cursor: 'pointer',
+            fontSize: 15, fontWeight: 600, border: 'none', cursor: 'pointer',
           }}>{backLabel}</button>
         )}
         <button onClick={onNext} style={{
-          flex: onBack ? 2 : 1, height: 54, borderRadius: 9999,
+          flex: onBack ? 2 : 1, height: 44, borderRadius: 9999,
           background: dark ? '#ffffff' : '#000000',
           color: dark ? '#000000' : '#ffffff',
-          fontSize: 17, fontWeight: 600, border: 'none', cursor: 'pointer',
+          fontSize: 15, fontWeight: 600, border: 'none', cursor: 'pointer',
         }}>{nextLabel}</button>
       </div>
     </div>
@@ -104,7 +118,7 @@ const RULE_DROPDOWN_OPTIONS = [
 
 // ─── Screen 2A — Design A: Chevron / rule-label list ────────────────────────
 
-function Screen2A({ rules, onSelectCat, onSetRule, onContinue, onBack, dark }) {
+function Screen2A({ rules, onSelectCat, onSetRule, onContinue, onBack, dark, dotInfo }) {
   const [scrolled, setScrolled]     = useState(false)
   const [moreExpanded, setMoreExpanded] = useState(false)
   const [dropdownId, setDropdownId] = useState(null)
@@ -249,14 +263,14 @@ function Screen2A({ rules, onSelectCat, onSetRule, onContinue, onBack, dark }) {
         </div>
       </div>
 
-      <BottomBar onBack={onBack} onNext={onContinue} nextLabel="Done" dark={dark} />
+      <BottomBar onBack={onBack} onNext={onContinue} nextLabel="Done" dark={dark} dotInfo={dotInfo} />
     </div>
   )
 }
 
 // ─── Screen 2B — Design B: Toggle + description expand ──────────────────────
 
-function Screen2({ rules, onToggleRule, onContinue, onBack, dark }) {
+function Screen2({ rules, onToggleRule, onContinue, onBack, dark, dotInfo }) {
   const [scrolled, setScrolled]         = useState(false)
   const [moreExpanded, setMoreExpanded] = useState(false)
   const [expanded, setExpanded]         = useState({})
@@ -363,14 +377,14 @@ function Screen2({ rules, onToggleRule, onContinue, onBack, dark }) {
         </div>
       </div>
 
-      <BottomBar onBack={onBack} onNext={onContinue} nextLabel="Done" dark={dark} />
+      <BottomBar onBack={onBack} onNext={onContinue} nextLabel="Done" dark={dark} dotInfo={dotInfo} />
     </div>
   )
 }
 
 // ─── Screen 3 — Never-share chip picker ─────────────────────────────────────
 
-function Screen3NeverPicker({ rules, onToggle, onContinue, dark }) {
+function Screen3NeverPicker({ rules, onToggle, onContinue, dark, dotInfo }) {
   const count = CATS.filter((c) => rules[c.id] === 'never').length
   const sub = dark ? 'rgba(235,235,245,0.6)' : '#6c6c70'
 
@@ -417,7 +431,7 @@ function Screen3NeverPicker({ rules, onToggle, onContinue, dark }) {
         </div>
       </div>
 
-      <BottomBar onBack={null} onNext={onContinue} nextLabel="Continue" dark={dark} />
+      <BottomBar onBack={null} onNext={onContinue} nextLabel="Continue" dark={dark} dotInfo={dotInfo} />
     </div>
   )
 }
@@ -469,7 +483,7 @@ function CategorySheet({ cat, rule, onSelect }) {
 
 const MAX_SECTION_ITEMS = 4
 
-function Screen4({ rules, onEdit, onContinue, dark }) {
+function Screen4({ rules, onEdit, onContinue, dark, dotInfo }) {
   const [scrolled, setScrolled]             = useState(false)
   const [expandedSections, setExpandedSections] = useState({})
   const scrollRef = useRef(null)
@@ -566,14 +580,14 @@ function Screen4({ rules, onEdit, onContinue, dark }) {
         </div>
       </div>
 
-      <BottomBar onBack={onEdit} backLabel="Edit" onNext={onContinue} nextLabel="Looks good" dark={dark} />
+      <BottomBar onBack={onEdit} backLabel="Edit" onNext={onContinue} nextLabel="Looks good" dark={dark} dotInfo={dotInfo} />
     </div>
   )
 }
 
 // ─── Screen 5 — Ready ────────────────────────────────────────────────────────
 
-function Screen5({ dark, onDone }) {
+function Screen5({ dark, onDone, dotInfo }) {
   const areas = [
     { Icon: MessageSquare, title: 'AI conversations',  sub: 'ChatGPT, Claude, Gemini, Copilot'        },
     { Icon: Globe,         title: 'Internet browsing', sub: 'Search, news, social, shopping'          },
@@ -584,7 +598,7 @@ function Screen5({ dark, onDone }) {
   return (
     <div className="absolute inset-0 bg-background" style={{ display: 'flex', flexDirection: 'column' }}>
       {/* Scrollable content */}
-      <div style={{ flex: 1, overflowY: 'auto', paddingBottom: 16 }}>
+      <div style={{ flex: 1, overflowY: 'auto', paddingBottom: 110 }}>
         <div className="onboarding-inner" style={{ paddingTop: 64, paddingBottom: 24 }}>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 28 }}>
             <div style={{ width: 72, height: 72, borderRadius: 22, display: 'flex', alignItems: 'center', justifyContent: 'center', background: dark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.05)' }}>
@@ -617,17 +631,7 @@ function Screen5({ dark, onDone }) {
         </div>
       </div>
 
-      {/* Done button — always at bottom, clear of nav dots */}
-      <div style={{ flexShrink: 0, paddingBottom: 56, paddingTop: 12 }}>
-        <div className="onboarding-inner">
-          <button onClick={onDone} style={{
-            width: '100%', height: 54, borderRadius: 9999,
-            background: dark ? '#ffffff' : '#000000',
-            color: dark ? '#000000' : '#ffffff',
-            fontSize: 17, fontWeight: 600, border: 'none', cursor: 'pointer',
-          }}>Done</button>
-        </div>
-      </div>
+      <BottomBar onBack={null} onNext={onDone} nextLabel="Done" dark={dark} dotInfo={dotInfo} />
     </div>
   )
 }
@@ -645,21 +649,22 @@ export default function OnboardingMobile({ dark, s2variant }) {
   const navTo = (s) => { setSheetId(null); setScreen(s) }
   const toggleNever = (id) => setRules((r) => ({ ...r, [id]: r[id] === 'never' ? 'ask' : 'never' }))
   const slide = { initial: { opacity: 0, x: 24 }, animate: { opacity: 1, x: 0 }, exit: { opacity: 0, x: -24 }, transition: { duration: 0.22, ease: [0.32, 0.72, 0, 1] } }
+  const dotInfo = { screens: [3, 2, 4, 5], current: screen, onNav: navTo }
 
   return (
     <div style={{ flex: 1, position: 'relative', overflow: 'hidden', fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", system-ui, sans-serif' }}>
       <AnimatePresence mode="wait">
-        {screen === 3 && <motion.div key="s3" {...slide} className="absolute inset-0"><Screen3NeverPicker rules={rules} onToggle={toggleNever} onContinue={() => navTo(2)} dark={dark} /></motion.div>}
+        {screen === 3 && <motion.div key="s3" {...slide} className="absolute inset-0"><Screen3NeverPicker rules={rules} onToggle={toggleNever} onContinue={() => navTo(2)} dark={dark} dotInfo={dotInfo} /></motion.div>}
         {screen === 2 && (
           <motion.div key={`s2-${s2variant}`} {...slide} className="absolute inset-0">
             {s2variant === 'A'
-              ? <Screen2A rules={rules} onSelectCat={(id) => setSheetId(id)} onSetRule={handleSetRule} onContinue={() => navTo(4)} onBack={() => navTo(3)} dark={dark} />
-              : <Screen2 rules={rules} onToggleRule={(id) => setRules((r) => ({ ...r, [id]: r[id] === 'ask' ? 'never' : 'ask' }))} onContinue={() => navTo(4)} onBack={() => navTo(3)} dark={dark} />
+              ? <Screen2A rules={rules} onSelectCat={(id) => setSheetId(id)} onSetRule={handleSetRule} onContinue={() => navTo(4)} onBack={() => navTo(3)} dark={dark} dotInfo={dotInfo} />
+              : <Screen2 rules={rules} onToggleRule={(id) => setRules((r) => ({ ...r, [id]: r[id] === 'ask' ? 'never' : 'ask' }))} onContinue={() => navTo(4)} onBack={() => navTo(3)} dark={dark} dotInfo={dotInfo} />
             }
           </motion.div>
         )}
-        {screen === 4 && <motion.div key="s4" {...slide} className="absolute inset-0"><Screen4 rules={rules} onEdit={() => navTo(2)} onContinue={() => navTo(5)} dark={dark} /></motion.div>}
-        {screen === 5 && <motion.div key="s5" {...slide} className="absolute inset-0"><Screen5 dark={dark} onDone={() => navTo(3)} /></motion.div>}
+        {screen === 4 && <motion.div key="s4" {...slide} className="absolute inset-0"><Screen4 rules={rules} onEdit={() => navTo(2)} onContinue={() => navTo(5)} dark={dark} dotInfo={dotInfo} /></motion.div>}
+        {screen === 5 && <motion.div key="s5" {...slide} className="absolute inset-0"><Screen5 dark={dark} onDone={() => navTo(3)} dotInfo={dotInfo} /></motion.div>}
       </AnimatePresence>
 
       {/* Bottom sheet — mobile only (desktop uses inline dropdown) */}
@@ -683,18 +688,6 @@ export default function OnboardingMobile({ dark, s2variant }) {
           </>
         )}
       </AnimatePresence>
-
-      {/* Nav dots */}
-      <div style={{ position: 'absolute', bottom: 20, left: '50%', transform: 'translateX(-50%)', zIndex: 100, display: 'flex', alignItems: 'center', gap: 6 }}>
-        {[3, 2, 4, 5].map((s) => (
-          <button key={s} onClick={() => navTo(s)} style={{
-            width: screen === s ? 24 : 8, height: 8, borderRadius: 4,
-            background: screen === s ? (dark ? 'rgba(255,255,255,0.7)' : 'rgba(0,0,0,0.5)') : (dark ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.18)'),
-            transition: 'width 0.2s ease',
-            flexShrink: 0, border: 'none', cursor: 'pointer',
-          }} />
-        ))}
-      </div>
     </div>
   )
 }
