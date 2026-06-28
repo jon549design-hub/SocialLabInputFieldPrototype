@@ -33,6 +33,13 @@
   --composer-border-width: 1px;
   --composer-min-height: auto;
   --input-font-size: 16px;
+  --inline-tooltip-bg: #ffffff;
+  --inline-tooltip-text: #242422;
+  --inline-tooltip-border: rgba(31, 30, 29, 0.12);
+  --inline-tooltip-radius: 7px;
+  --inline-tooltip-shadow: 0 4px 14px rgba(31, 30, 29, 0.14);
+  --secured-highlight-bg: rgba(74, 138, 90, 0.18);
+  --secured-highlight-line: rgba(74, 138, 90, 0.72);
 }
 
 [data-color-mode="dark"] {
@@ -47,6 +54,12 @@
   --hover:         rgba(255, 255, 255, 0.07);
   --shadow:        0 2px 14px rgba(0, 0, 0, 0.30);
   --focus-shadow:  0 4px 22px rgba(0, 0, 0, 0.34);
+  --inline-tooltip-bg: #181817;
+  --inline-tooltip-text: #ffffff;
+  --inline-tooltip-border: rgba(255, 255, 255, 0.10);
+  --inline-tooltip-shadow: 0 5px 16px rgba(0, 0, 0, 0.34);
+  --secured-highlight-bg: rgba(102, 190, 124, 0.22);
+  --secured-highlight-line: rgba(116, 211, 139, 0.86);
 }
 
 [data-product-theme="chatgpt"] {
@@ -78,6 +91,11 @@
   --composer-border-width: 1px;
   --composer-min-height: 118px;
   --input-font-size: 16px;
+  --inline-tooltip-bg: #212121;
+  --inline-tooltip-text: #ffffff;
+  --inline-tooltip-border: transparent;
+  --inline-tooltip-radius: 999px;
+  --inline-tooltip-shadow: 0 5px 16px rgba(0, 0, 0, 0.24);
 }
 
 [data-product-theme="chatgpt"][data-color-mode="dark"] {
@@ -96,6 +114,10 @@
                    0 14px 38px rgba(0, 0, 0, 0.32);
   --focus-shadow:  0 1px 2px rgba(0, 0, 0, 0.28),
                    0 16px 42px rgba(0, 0, 0, 0.38);
+  --inline-tooltip-bg: #f4f4f4;
+  --inline-tooltip-text: #111111;
+  --inline-tooltip-border: transparent;
+  --inline-tooltip-shadow: 0 5px 18px rgba(0, 0, 0, 0.38);
 }
 
 /* ───────────────────────────────  Reset  ─────────────────────────────── */
@@ -321,7 +343,10 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 }
 /* Highlights use only background + inset underline + radius — never padding or
    borders, which would shift glyphs and break alignment with the textarea. */
-.composer .highlight-backdrop .hl { border-radius: 3px; }
+.composer .highlight-backdrop .hl {
+  border-radius: 3px;
+  color: inherit;
+}
 .composer .highlight-backdrop .hl.high {
   background: rgba(204, 64, 54, 0.16);
   box-shadow: inset 0 -1.5px 0 rgba(204, 64, 54, 0.62);
@@ -329,6 +354,106 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 .composer .highlight-backdrop .hl.med {
   background: rgba(201, 137, 47, 0.20);
   box-shadow: inset 0 -1.5px 0 rgba(201, 137, 47, 0.68);
+}
+.composer .highlight-backdrop .hl.inline {
+  background: rgba(204, 64, 54, 0.16);
+  box-shadow: inset 0 -1.5px 0 rgba(204, 64, 54, 0.62);
+}
+.composer .highlight-backdrop .hl.secured {
+  background: var(--secured-highlight-bg);
+  box-shadow: inset 0 0 0 1px var(--secured-highlight-line);
+  padding-inline: 2px;
+  margin-inline: -2px;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+}
+
+/* Inline privacy type: neutral and intentionally separate from grade/color UI. */
+.inline-privacy-tooltip {
+  --inline-nudge-duration: 130ms;
+  --inline-nudge-offset: 7px;
+  --inline-nudge-scale-from: 0.96;
+  position: absolute;
+  z-index: 3;
+  width: max-content;
+  max-width: calc(100% - 12px);
+  min-height: 28px;
+  padding: 3px 3px 3px 8px;
+  border: 1px solid var(--inline-tooltip-border);
+  border-radius: var(--inline-tooltip-radius);
+  background: var(--inline-tooltip-bg);
+  box-shadow: var(--inline-tooltip-shadow);
+  color: var(--inline-tooltip-text);
+  font-size: 12px;
+  font-weight: 550;
+  line-height: 1;
+  letter-spacing: 0.01em;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  pointer-events: auto;
+  white-space: nowrap;
+  animation: inline-nudge-in var(--inline-nudge-duration) cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+.inline-privacy-tooltip::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  width: 7px;
+  height: 7px;
+  background: inherit;
+  transform: translateX(-50%) rotate(45deg);
+}
+.inline-privacy-tooltip::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: var(--inline-nudge-offset);
+}
+.inline-privacy-tooltip.is-above {
+  transform-origin: center bottom;
+  transform: translate(-50%, calc(-100% - var(--inline-nudge-offset)));
+}
+.inline-privacy-tooltip.is-above::before { top: 100%; }
+.inline-privacy-tooltip.is-above::after { bottom: -3px; }
+.inline-privacy-tooltip.is-below {
+  transform-origin: center top;
+  transform: translate(-50%, var(--inline-nudge-offset));
+}
+.inline-privacy-tooltip.is-below::before { bottom: 100%; }
+.inline-privacy-tooltip.is-below::after { top: -3px; }
+
+.inline-nudge-action {
+  width: 22px;
+  height: 22px;
+  border-radius: 5px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: currentColor;
+  opacity: 0.78;
+  background: transparent;
+  cursor: pointer;
+  transition: opacity 100ms ease, transform 100ms ease;
+}
+.inline-nudge-action:hover {
+  opacity: 1;
+  background: transparent;
+}
+.inline-nudge-action:active { transform: scale(0.92); }
+.inline-nudge-action:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 1px;
+}
+
+@keyframes inline-nudge-in {
+  from { opacity: 0; scale: var(--inline-nudge-scale-from); }
+  to { opacity: 1; scale: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .inline-privacy-tooltip { animation: none; }
 }
 
 /* Bottom toolbar inside the composer */

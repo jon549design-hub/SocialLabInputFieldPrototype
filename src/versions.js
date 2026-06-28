@@ -10,6 +10,7 @@ export const VERSIONS = [
   { id: 'template',      label: 'Template',      desc: 'Plain composer — the base' },
   { id: 'privacy-grade', label: 'Privacy grade', desc: 'Live privacy grading + highlights' },
   { id: 'privacy-color', label: 'Privacy color', desc: 'Same signal, color only — no letter' },
+  { id: 'privacy-inline', label: 'Inline nudges', desc: 'Privacy types shown beside highlighted text' },
   { id: 'onboarding',    label: 'Onboarding',    desc: 'iOS privacy rules onboarding flow' },
 ]
 

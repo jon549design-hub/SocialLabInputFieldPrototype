@@ -37,11 +37,11 @@ function listRegex(list) {
 }
 
 const RULES = [
-  { category: 'person',   re: listRegex(NAMES) },
-  { category: 'location', re: listRegex(LOCATIONS) },
-  { category: 'time',     re: listRegex(TIMES) },
-  { category: 'contact',  re: EMAIL },
-  { category: 'contact',  re: PHONE },
+  { category: 'person',   typeLabel: 'Name',     re: listRegex(NAMES) },
+  { category: 'location', typeLabel: 'Location', re: listRegex(LOCATIONS) },
+  { category: 'time',     typeLabel: 'Timing',   re: listRegex(TIMES) },
+  { category: 'contact',  typeLabel: 'Email',    re: EMAIL },
+  { category: 'contact',  typeLabel: 'Phone',    re: PHONE },
 ]
 
 const GRADES = [
@@ -66,7 +66,13 @@ export function analyze(text) {
     rule.re.lastIndex = 0
     let m
     while ((m = rule.re.exec(text)) !== null) {
-      raw.push({ category: rule.category, term: m[0], start: m.index, end: m.index + m[0].length })
+      raw.push({
+        category: rule.category,
+        typeLabel: rule.typeLabel,
+        term: m[0],
+        start: m.index,
+        end: m.index + m[0].length,
+      })
       if (m.index === rule.re.lastIndex) rule.re.lastIndex++ // guard against zero-length loops
     }
   }

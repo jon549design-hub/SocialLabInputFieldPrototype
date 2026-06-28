@@ -27,8 +27,15 @@ export default function App() {
   const [onboardingView, setOnboardingView] = useState('mobile')
   const [s2variant, setS2variant] = useState('A')
   const [detailsOpen, setDetailsOpen] = useState(false) // mobile privacy sheet
-  const privacyEnabled = version.startsWith('privacy') // privacy-grade | privacy-color
-  const showLetter = version === 'privacy-grade'        // color-only variant hides the letter
+  const privacyMode = version === 'privacy-grade'
+    ? 'grade'
+    : version === 'privacy-color'
+      ? 'color'
+      : version === 'privacy-inline'
+        ? 'inline'
+        : 'off'
+  const showPrivacySummary = privacyMode === 'grade' || privacyMode === 'color'
+  const showLetter = privacyMode === 'grade'
   const mainRef = useRef(null)
   const idRef = useRef(0)
 
@@ -41,7 +48,9 @@ export default function App() {
   const modelOptions = MODEL_GROUPS[productTheme]
 
   // Close the mobile details sheet once the draft (and its analysis) clears.
-  useEffect(() => { if (privacy.status === 'idle') setDetailsOpen(false) }, [privacy.status])
+  useEffect(() => {
+    if (privacy.status === 'idle' || !showPrivacySummary) setDetailsOpen(false)
+  }, [privacy.status, showPrivacySummary])
 
   // Apply appearance settings to <html> so the CSS tokens switch.
   useEffect(() => {
@@ -147,8 +156,7 @@ export default function App() {
                   placeholder={placeholder}
                   productName={productName}
                   productTheme={productTheme}
-                  privacyEnabled={privacyEnabled}
-                  showLetter={showLetter}
+                  privacyMode={privacyMode}
                   onPrivacyChange={setPrivacy}
                   onOpenDetails={() => setDetailsOpen(true)}
                   onAttach={() => console.log('[attach] open file picker')}
@@ -160,8 +168,8 @@ export default function App() {
             </div>
           </main>
 
-          {privacyEnabled && <PrivacyNudge status={privacy.status} analysis={privacy.analysis} showLetter={showLetter} />}
-          {privacyEnabled && (
+          {showPrivacySummary && <PrivacyNudge status={privacy.status} analysis={privacy.analysis} showLetter={showLetter} />}
+          {showPrivacySummary && (
             <PrivacySheet
               open={detailsOpen}
               status={privacy.status}
