@@ -26,6 +26,7 @@ Give people using the Inline nudges version a one-time way to enable automatic p
 - The control is hidden until the user selects Turn on in the setup modal.
 - A locked icon means auto-anonymization is on. An unlocked icon means it is off.
 - Selecting the icon opens a compact anchored menu above it.
+- The anchored menu hugs its label and controls instead of using a fixed width, while retaining a small-screen maximum.
 - The menu contains one row labeled "Anonymisation" with a toggle on the right.
 - A gear button sits beside the toggle and opens the detailed settings modal.
 - Turning the setting off sends future messages normally and does not reopen the setup modal.
