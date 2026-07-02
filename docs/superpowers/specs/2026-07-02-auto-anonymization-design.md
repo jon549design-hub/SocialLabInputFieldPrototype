@@ -18,6 +18,19 @@ Give people using the Inline nudges version a one-time way to enable automatic p
 10. Pressing Escape or clicking outside the modal closes it without sending.
 11. Template, Privacy grade, Privacy color, and Onboarding send normally without the modal or privacy-based Send button colors.
 12. Each category name has a small info button. Its tooltip opens on hover, keyboard focus, or tap and closes on pointer leave, focus loss, outside tap, or Escape.
+13. After auto-anonymization is configured, a lock control appears beside the attachment button in Inline nudges.
+
+## Session Control
+
+- The control is hidden until the user selects Turn on in the setup modal.
+- A locked icon means auto-anonymization is on. An unlocked icon means it is off.
+- Selecting the icon opens a compact anchored menu above it.
+- The menu contains one row labeled "Anonymisation" with a toggle on the right.
+- Turning the setting off sends future messages normally and does not reopen the setup modal.
+- Turning it back on restores the user's previously selected privacy categories.
+- The control remains visible while off so the user can turn it on again.
+- The menu closes on outside interaction or Escape.
+- This control appears only in the Inline nudges version.
 
 ## Category Explanations
 
@@ -34,7 +47,7 @@ An outlined info icon sits directly after each category name without changing th
 
 ## State And Data
 
-The composer owns three new pieces of temporary state: whether the modal is open, whether auto-anonymization is enabled, and which privacy categories are enabled. This state lasts while the current prototype page remains open; it is not stored permanently.
+The composer owns temporary state for whether the modal is open, whether auto-anonymization has been configured, whether it is currently enabled, which privacy categories are enabled, and whether the session-control menu is open. This state lasts while the current prototype page remains open; it is not stored permanently.
 
 The existing privacy analysis remains unchanged. Its finding category values determine which toggle applies to each highlight. The existing secured-highlight state continues to provide the green protected appearance.
 
@@ -46,6 +59,7 @@ The existing privacy analysis remains unchanged. Its finding category values det
 - The modal and red/green Send states appear only in the Inline nudges version.
 - If analysis is still running when Send is pressed, the composer performs an immediate local analysis before deciding whether to show the modal.
 - Turning every category off is allowed because it is an explicit user choice; the message is then sent without applying protection.
+- Disabling auto-anonymization from the session control does not erase category choices or return the user to an unconfigured state.
 
 ## Verification
 
@@ -57,3 +71,4 @@ The existing privacy analysis remains unchanged. Its finding category values det
 - Confirm Escape, backdrop click, keyboard focus, desktop layout, and mobile layout work correctly.
 - Confirm every version other than Inline nudges keeps the normal Send button and never opens the modal.
 - Confirm every info tooltip opens and closes with pointer, keyboard, and tap interactions without overlapping the category toggle or leaving the modal bounds.
+- Confirm the lock control appears only after setup, changes between locked and unlocked states, preserves category choices, and does not reopen the setup modal while disabled.
