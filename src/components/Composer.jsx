@@ -1,6 +1,8 @@
 import { useEffect, useRef, useState } from 'react'
 import ModelPicker from './ModelPicker.jsx'
 import InlinePrivacyTooltip from './InlinePrivacyTooltip.jsx'
+import AutoAnonymizationModal, { ALL_PRIVACY_CATEGORIES } from './AutoAnonymizationModal.jsx'
+import AnonymizationControl from './AnonymizationControl.jsx'
 import { Plus, ArrowUp } from './icons.jsx'
 import { analyze } from '../privacy.js'
 
@@ -65,6 +67,13 @@ export default function Composer({
   const highlightRefs = useRef(new Map())
   const [activeNudge, setActiveNudge] = useState(null)
   const [securedFindings, setSecuredFindings] = useState(() => new Set())
+  const [anonymizationModalMode, setAnonymizationModalMode] = useState(null)
+  const [autoAnonymizationConfigured, setAutoAnonymizationConfigured] = useState(false)
+  const [autoAnonymizationEnabled, setAutoAnonymizationEnabled] = useState(false)
+  const [autoCategories, setAutoCategories] = useState(() => new Set(ALL_PRIVACY_CATEGORIES))
+  const [showAnonymizedWords, setShowAnonymizedWords] = useState(false)
+  const [draftAutoCategories, setDraftAutoCategories] = useState(() => new Set(ALL_PRIVACY_CATEGORIES))
+  const [draftShowAnonymizedWords, setDraftShowAnonymizedWords] = useState(false)
   const hasText = text.trim().length > 0
   const privacyEnabled = privacyMode !== 'off'
   const showPrivacySummary = privacyMode === 'grade' || privacyMode === 'color'
@@ -103,6 +112,7 @@ export default function Composer({
   useEffect(() => {
     highlightRefs.current.clear()
     setActiveNudge(null)
+    setAnonymizationModalMode(null)
   }, [privacyMode])
 
   // A touch tooltip stays open until the user taps outside the input.
@@ -217,13 +227,82 @@ export default function Composer({
     setActiveNudge(null)
   }
 
-  function submit(e) {
-    e?.preventDefault()
-    if (!hasText) return
+  function sendMessage() {
     onSend(text.trim())
     setText('')
     setActiveNudge(null)
     setSecuredFindings(new Set())
+    setAnonymizationModalMode(null)
+  }
+
+  function secureFindingsByCategory(findings, categories) {
+    setSecuredFindings((current) => {
+      const next = new Set(current)
+      findings.forEach((finding) => {
+        if (categories.has(finding.category)) next.add(findingKey(finding))
+      })
+      return next
+    })
+  }
+
+  function submit(e) {
+    e?.preventDefault()
+    if (!hasText) return
+
+    const currentResult = inlineNudges ? analyze(text) : null
+    const unresolvedFindings = currentResult?.findings?.filter(
+      (finding) => !securedFindings.has(findingKey(finding)),
+    ) ?? []
+
+    if (!unresolvedFindings.length) {
+      sendMessage()
+      return
+    }
+
+    if (autoAnonymizationConfigured) {
+      if (autoAnonymizationEnabled) {
+        secureFindingsByCategory(unresolvedFindings, autoCategories)
+      }
+      sendMessage()
+      return
+    }
+
+    setDraftAutoCategories(new Set(autoCategories))
+    setDraftShowAnonymizedWords(showAnonymizedWords)
+    setResult(currentResult)
+    setStatus('ready')
+    setAnonymizationModalMode('setup')
+  }
+
+  function toggleDraftAutoCategory(category) {
+    setDraftAutoCategories((current) => {
+      const next = new Set(current)
+      if (next.has(category)) next.delete(category)
+      else next.add(category)
+      return next
+    })
+  }
+
+  function turnOnAutoAnonymization() {
+    const currentResult = analyze(text)
+    secureFindingsByCategory(currentResult?.findings ?? [], draftAutoCategories)
+    setAutoCategories(new Set(draftAutoCategories))
+    setShowAnonymizedWords(draftShowAnonymizedWords)
+    setAutoAnonymizationConfigured(true)
+    setAutoAnonymizationEnabled(true)
+    sendMessage()
+  }
+
+  function openAnonymizationSettings() {
+    setDraftAutoCategories(new Set(autoCategories))
+    setDraftShowAnonymizedWords(showAnonymizedWords)
+    setAnonymizationModalMode('settings')
+  }
+
+  function saveAnonymizationSettings() {
+    setAutoCategories(new Set(draftAutoCategories))
+    setShowAnonymizedWords(draftShowAnonymizedWords)
+    setAnonymizationModalMode(null)
   }
 
   // Enter sends, Shift+Enter inserts a newline.
@@ -234,10 +313,33 @@ export default function Composer({
     }
   }
 
-  const visibleFindings = status === 'ready' ? result?.findings : null
+  const readyFindings = status === 'ready' ? result?.findings ?? [] : null
+  const autoVisibleFindings = readyFindings?.filter((finding) => autoCategories.has(finding.category))
+  const autoHighlightingActive = inlineNudges && autoAnonymizationEnabled
+  const visibleFindings = autoHighlightingActive
+    ? (showAnonymizedWords ? autoVisibleFindings : null)
+    : readyFindings
+  const displaySecuredFindings = autoHighlightingActive
+    ? new Set((autoVisibleFindings ?? []).map(findingKey))
+    : securedFindings
+  const hasPrivacyIssue = inlineNudges
+    && !autoHighlightingActive
+    && status === 'ready'
+    && result?.findings?.some((finding) => !securedFindings.has(findingKey(finding)))
+  const hasSecuredPrivacyIssue = inlineNudges
+    && status === 'ready'
+    && (autoHighlightingActive
+      ? autoVisibleFindings?.length > 0
+      : result?.findings?.some((finding) => securedFindings.has(findingKey(finding))))
+  const sendStateClass = hasPrivacyIssue
+    ? ' privacy-risk'
+    : hasSecuredPrivacyIssue
+      ? ' privacy-secured'
+      : ''
 
   return (
-    <form className="composer" onSubmit={submit} autoComplete="off">
+    <>
+      <form className="composer" onSubmit={submit} autoComplete="off">
       <div
         className="input-wrap"
         ref={inputWrapRef}
@@ -249,7 +351,7 @@ export default function Composer({
             visibleFindings,
             inlineNudges,
             highlightRefs,
-            securedFindings,
+            displaySecuredFindings,
           )}
         </div>
         <textarea
@@ -283,6 +385,14 @@ export default function Composer({
             <Plus />
           </button>
 
+          {inlineNudges && autoAnonymizationConfigured && (
+            <AnonymizationControl
+              enabled={autoAnonymizationEnabled}
+              onEnabledChange={setAutoAnonymizationEnabled}
+              onOpenSettings={openAnonymizationSettings}
+            />
+          )}
+
           {showPrivacySummary && status !== 'idle' && (
             <button
               type="button"
@@ -309,7 +419,7 @@ export default function Composer({
           />
           <button
             type="submit"
-            className={`send${hasText ? ' active' : ''}`}
+            className={`send${hasText ? ' active' : ''}${sendStateClass}`}
             title="Send"
             aria-label="Send message"
             disabled={!hasText}
@@ -318,6 +428,23 @@ export default function Composer({
           </button>
         </div>
       </div>
-    </form>
+      </form>
+
+      <AutoAnonymizationModal
+        open={inlineNudges && anonymizationModalMode !== null}
+        mode={anonymizationModalMode ?? 'setup'}
+        enabledCategories={draftAutoCategories}
+        showAnonymizedWords={draftShowAnonymizedWords}
+        onToggleCategory={toggleDraftAutoCategory}
+        onToggleShowAnonymizedWords={setDraftShowAnonymizedWords}
+        onPrimary={anonymizationModalMode === 'settings'
+          ? saveAnonymizationSettings
+          : turnOnAutoAnonymization}
+        onSecondary={anonymizationModalMode === 'settings'
+          ? () => setAnonymizationModalMode(null)
+          : sendMessage}
+        onClose={() => setAnonymizationModalMode(null)}
+      />
+    </>
   )
 }
