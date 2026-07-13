@@ -12,6 +12,7 @@ export const VERSIONS = [
   { id: 'privacy-color', label: 'Privacy color', desc: 'Same signal, color only — no letter' },
   { id: 'privacy-inline', label: 'Inline nudges', desc: 'Privacy types shown beside highlighted text' },
   { id: 'onboarding',    label: 'Onboarding',    desc: 'iOS privacy rules onboarding flow' },
+  { id: 'onboarding-v2', label: 'Onboarding v2', desc: 'Nudge-first onboarding with category grid' },
 ]
 
 export const DEFAULT_VERSION = 'privacy-grade'
