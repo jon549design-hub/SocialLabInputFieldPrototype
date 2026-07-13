@@ -6,6 +6,7 @@ import PrivacyNudge from './components/PrivacyNudge.jsx'
 import PrivacySheet from './components/PrivacySheet.jsx'
 import ThemeControl from './components/ThemeControl.jsx'
 import OnboardingVersion from './components/OnboardingVersion.jsx'
+import OnboardingV2Version from './components/OnboardingV2Version.jsx'
 import { ChatGPTMark, Spark } from './components/icons.jsx'
 import { DEFAULT_MODEL, DEFAULT_MODELS, MODEL_GROUPS, respond } from './data.js'
 import { DEFAULT_VERSION } from './versions.js'
@@ -111,6 +112,8 @@ export default function App() {
     <div className="app">
       {version === 'onboarding' ? (
         <OnboardingVersion view={onboardingView} dark={colorMode === 'dark'} s2variant={s2variant} />
+      ) : version === 'onboarding-v2' ? (
+        <OnboardingV2Version dark={colorMode === 'dark'} />
       ) : (
         <>
           <header className="topbar">

@@ -11,6 +11,7 @@ export const VERSIONS = [
   { id: 'privacy-grade', label: 'Privacy grade', desc: 'Live privacy grading + highlights' },
   { id: 'privacy-color', label: 'Privacy color', desc: 'Same signal, color only — no letter' },
   { id: 'onboarding',    label: 'Onboarding',    desc: 'iOS privacy rules onboarding flow' },
+  { id: 'onboarding-v2', label: 'Onboarding v2', desc: 'Nudge-first onboarding with category grid' },
 ]
 
 export const DEFAULT_VERSION = 'privacy-grade'
