@@ -117,7 +117,7 @@ function Screen1({ onContinue, dark, dotInfo }) {
 
           {/* Greeting */}
           <p style={{ fontSize: 20, fontWeight: 600, color: fg, marginBottom: 20, lineHeight: 1.25, letterSpacing: '-0.3px' }}>
-            How can I help you today?
+            How this works
           </p>
 
           {/* Composer mockup */}
@@ -209,49 +209,123 @@ function Screen1({ onContinue, dark, dotInfo }) {
   )
 }
 
-// ─── Screen 2: Category grid ──────────────────────────────────────────────────
+// ─── Screen 2: Category grid + per-category subcategory sheets ───────────────
 const CATS_V2 = [
-  { id: 'financial',     Icon: CreditCard,  label: 'Financial',         example: 'bank details, salary, spending' },
-  { id: 'identity',      Icon: FileText,    label: 'Identity & ID',     example: 'name, school, workplace' },
-  { id: 'health',        Icon: Heart,       label: 'Health',            example: 'medical or mental health info' },
-  { id: 'thoughts',      Icon: BookOpen,    label: 'Personal thoughts', example: 'journal entries, fears, values' },
-  { id: 'location',      Icon: MapPin,      label: 'Location',          example: 'home address, current location' },
-  { id: 'relationships', Icon: Users,       label: 'Relationships',     example: 'partner, family, friends' },
-  { id: 'work',          Icon: Briefcase,   label: 'Work & education',  example: 'employer, job title, school' },
-  { id: 'creative',      Icon: Paintbrush,  label: 'Creative work',     example: 'drafts, code, design files' },
-  { id: 'preferences',   Icon: Star,        label: 'Preferences',       example: 'food, travel, hobbies' },
+  { id: 'financial',     Icon: CreditCard,  label: 'Financial',         example: 'bank details, salary, spending',
+    subs: [
+      { id: 'bank',     label: 'Bank balance & accounts', sub: 'Account numbers, balances, transactions' },
+      { id: 'salary',   label: 'Salary & income',         sub: 'Earnings, pay slips, bonuses'           },
+      { id: 'cards',    label: 'Cards & spending',        sub: 'Credit cards, purchase history'         },
+    ],
+  },
+  { id: 'identity',      Icon: FileText,    label: 'Identity & ID',     example: 'name, email, ID numbers',
+    subs: [
+      { id: 'name',     label: 'Full name',               sub: 'First and last name'                    },
+      { id: 'contact',  label: 'Email & phone',           sub: 'Contact details'                        },
+      { id: 'id_docs',  label: 'ID documents',            sub: 'Passport, SSN, ID numbers'              },
+    ],
+  },
+  { id: 'health',        Icon: Heart,       label: 'Health',            example: 'medical or mental health info',
+    subs: [
+      { id: 'medical',  label: 'Medical conditions',      sub: 'Diagnoses, treatments'                  },
+      { id: 'mental',   label: 'Mental health',           sub: 'Therapy, mood, wellbeing'               },
+      { id: 'meds',     label: 'Medications',             sub: 'Prescriptions, dosages'                 },
+    ],
+  },
+  { id: 'thoughts',      Icon: BookOpen,    label: 'Personal thoughts', example: 'journal entries, fears, values',
+    subs: [
+      { id: 'journal',  label: 'Journal entries',         sub: 'Diaries, personal notes'                },
+      { id: 'fears',    label: 'Fears & anxieties',       sub: 'Personal worries'                       },
+      { id: 'beliefs',  label: 'Beliefs & values',        sub: 'Religion, politics, ethics'             },
+    ],
+  },
+  { id: 'location',      Icon: MapPin,      label: 'Location',          example: 'home address, current location',
+    subs: [
+      { id: 'home',     label: 'Home address',            sub: 'Street address, neighborhood'           },
+      { id: 'current',  label: 'Current location',        sub: 'Real-time whereabouts'                  },
+      { id: 'travel',   label: 'Travel plans',            sub: 'Trips, destinations'                    },
+    ],
+  },
+  { id: 'relationships', Icon: Users,       label: 'Relationships',     example: 'partner, family, friends',
+    subs: [
+      { id: 'partner',  label: 'Partner / spouse',        sub: 'Romantic relationship details'          },
+      { id: 'family',   label: 'Family members',          sub: 'Parents, siblings, children'            },
+      { id: 'friends',  label: 'Friends',                 sub: 'Social circle, contacts'                },
+    ],
+  },
+  { id: 'work',          Icon: Briefcase,   label: 'Work & education',  example: 'employer, job title, school',
+    subs: [
+      { id: 'employer', label: 'Employer & role',         sub: 'Company name, job title'                },
+      { id: 'school',   label: 'School & education',      sub: 'University, grades, degrees'            },
+      { id: 'projects', label: 'Work projects',           sub: 'Confidential work details'              },
+    ],
+  },
+  { id: 'creative',      Icon: Paintbrush,  label: 'Creative work',     example: 'drafts, code, design files',
+    subs: [
+      { id: 'writing',  label: 'Writing drafts',          sub: 'Unpublished text, stories'              },
+      { id: 'code',     label: 'Code & projects',         sub: 'Source code, repositories'              },
+      { id: 'design',   label: 'Design files',            sub: 'Mockups, assets, ideas'                 },
+    ],
+  },
+  { id: 'preferences',   Icon: Star,        label: 'Preferences',       example: 'food, travel, hobbies',
+    subs: [
+      { id: 'food',     label: 'Food & diet',             sub: 'Allergies, preferences'                 },
+      { id: 'hobbies',  label: 'Hobbies & interests',     sub: 'Sports, games, activities'              },
+      { id: 'lifestyle',label: 'Lifestyle choices',       sub: 'Routines, habits'                       },
+    ],
+  },
 ]
 
-function Screen2({ selected, onToggle, onContinue, onBack, dark, dotInfo }) {
-  const fg     = dark ? '#fff' : '#000'
-  const sub    = dark ? 'rgba(235,235,245,0.6)' : '#6c6c70'
-  const card   = dark ? 'rgba(28,28,30,1)' : '#ffffff'
-  const border = dark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.08)'
-  const selBg  = dark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.05)'
+function Screen2({ subRules, onSetSubRule, othersText, onSetOthers, onContinue, onBack, dark, dotInfo }) {
+  const [sheetCatId, setSheetCatId] = useState(null)
+
+  const fg        = dark ? '#fff' : '#000'
+  const sub       = dark ? 'rgba(235,235,245,0.6)' : '#6c6c70'
+  const card      = dark ? 'rgba(28,28,30,1)' : '#ffffff'
+  const sheetBg   = dark ? 'rgba(28,28,30,0.96)' : 'rgba(248,248,250,0.96)'
+  const border    = dark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.08)'
+  const sep       = dark ? 'rgba(255,255,255,0.07)' : 'rgba(60,60,67,0.15)'
+  const selBg     = dark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.05)'
   const selBorder = dark ? 'rgba(255,255,255,0.55)' : 'rgba(0,0,0,0.55)'
+  const inputBg   = dark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.04)'
+
+  const isCatSelected = (id) => {
+    const rules = subRules[id] || {}
+    return Object.values(rules).some(Boolean) || !!(othersText[id]?.trim())
+  }
+
+  const handleTile = (id) => {
+    if (isCatSelected(id)) {
+      CATS_V2.find((c) => c.id === id).subs.forEach(({ id: sid }) => onSetSubRule(id, sid, false))
+      onSetOthers(id, '')
+    } else {
+      setSheetCatId(id)
+    }
+  }
+
+  const sheetCat = CATS_V2.find((c) => c.id === sheetCatId) || null
 
   return (
     <div className="absolute inset-0 bg-background" style={{ display: 'flex', flexDirection: 'column' }}>
       <div style={{ flex: 1, overflowY: 'auto', paddingBottom: 110 }}>
         <div className="onboarding-inner" style={{ paddingTop: 28 }}>
           <h1 style={{ fontSize: 28, fontWeight: 700, letterSpacing: '-0.5px', color: fg, lineHeight: 1.15, marginBottom: 8 }}>
-            What should get a nudge?
+            What feels sensitive to you?
           </h1>
           <p style={{ fontSize: 15, color: sub, marginBottom: 24, lineHeight: '22px' }}>
-            Select the categories where you'd like a reminder before sharing.
+            Select what you'd like us to watch for when you type.
           </p>
 
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 10 }}>
             {CATS_V2.map(({ id, Icon, label, example }) => {
-              const isSel = selected.includes(id)
+              const isSel = isCatSelected(id)
               return (
                 <button
                   key={id}
-                  onClick={() => onToggle(id)}
+                  onClick={() => handleTile(id)}
                   style={{
                     display: 'flex', flexDirection: 'column', alignItems: 'flex-start',
-                    padding: '11px 10px 12px',
-                    borderRadius: 14,
+                    padding: '11px 10px 12px', borderRadius: 14,
                     background: isSel ? selBg : card,
                     border: `1.5px solid ${isSel ? selBorder : border}`,
                     cursor: 'pointer', textAlign: 'left', position: 'relative',
@@ -282,60 +356,107 @@ function Screen2({ selected, onToggle, onContinue, onBack, dark, dotInfo }) {
           </div>
         </div>
       </div>
+
       <BottomBar onBack={onBack} onNext={onContinue} nextLabel="Next" dark={dark} dotInfo={dotInfo} />
-    </div>
-  )
-}
 
-// ─── Screen 3: Financial granular ────────────────────────────────────────────
-const FIN_SUBS = [
-  { id: 'bank',   label: 'Bank balance & accounts', sub: 'Account numbers, balances, transactions' },
-  { id: 'salary', label: 'Salary & income',          sub: 'Earnings, pay slips, bonuses' },
-  { id: 'cards',  label: 'Cards & spending',         sub: 'Credit cards, purchase history' },
-]
-
-function Screen3({ finRules, onSetFinRule, onContinue, onBack, dark, dotInfo }) {
-  const fg   = dark ? '#fff' : '#000'
-  const sub  = dark ? 'rgba(235,235,245,0.6)' : '#6c6c70'
-  const card = dark ? 'rgba(28,28,30,1)' : '#ffffff'
-  const sep  = dark ? 'rgba(255,255,255,0.06)' : 'rgba(60,60,67,0.18)'
-
-  return (
-    <div className="absolute inset-0 bg-background" style={{ display: 'flex', flexDirection: 'column' }}>
-      <div style={{ flex: 1, overflowY: 'auto', paddingBottom: 110 }}>
-        <div className="onboarding-inner" style={{ paddingTop: 28 }}>
-          <h1 style={{ fontSize: 28, fontWeight: 700, letterSpacing: '-0.5px', color: fg, lineHeight: 1.15, marginBottom: 8 }}>
-            Financial details
-          </h1>
-          <p style={{ fontSize: 15, color: sub, marginBottom: 28, lineHeight: '22px' }}>
-            Some financial information is more sensitive than others. Fine-tune what gets a nudge.
-          </p>
-
-          <div style={{ borderRadius: 14, background: card, overflow: 'hidden', border: `1px solid ${sep}` }}>
-            {FIN_SUBS.map(({ id, label, sub: itemSub }, i) => (
-              <div key={id}>
-                {i > 0 && <div style={{ height: 1, background: sep, marginLeft: 16 }} />}
-                <div style={{ display: 'flex', alignItems: 'center', padding: '14px 16px', gap: 12 }}>
-                  <div style={{ flex: 1 }}>
-                    <div style={{ fontSize: 16, fontWeight: 500, color: fg, lineHeight: '21px' }}>{label}</div>
-                    <div style={{ fontSize: 13, color: sub, lineHeight: '17px', marginTop: 2 }}>{itemSub}</div>
-                  </div>
-                  <IOSToggle
-                    on={finRules[id] !== false}
-                    onToggle={() => onSetFinRule(id, !finRules[id])}
-                    dark={dark}
-                  />
-                </div>
+      {/* Per-category subcategory bottom sheet */}
+      <AnimatePresence>
+        {sheetCat && (
+          <>
+            <motion.div
+              key="cat-scrim"
+              initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              style={{ position: 'absolute', inset: 0, zIndex: 40, background: 'rgba(0,0,0,0.35)' }}
+              onClick={() => setSheetCatId(null)}
+            />
+            <motion.div
+              key={`cat-sheet-${sheetCat.id}`}
+              initial={{ y: '100%' }} animate={{ y: 0 }} exit={{ y: '100%' }}
+              transition={{ type: 'spring', damping: 34, stiffness: 400, mass: 0.9 }}
+              style={{
+                position: 'absolute', bottom: 0, left: 0, right: 0, zIndex: 50,
+                borderRadius: '20px 20px 0 0',
+                background: sheetBg,
+                backdropFilter: 'blur(44px) saturate(180%)',
+                WebkitBackdropFilter: 'blur(44px) saturate(180%)',
+                borderTop: `1px solid ${sep}`,
+              }}
+            >
+              <div style={{ display: 'flex', justifyContent: 'center', paddingTop: 12, paddingBottom: 4 }}>
+                <div style={{ width: 36, height: 5, borderRadius: 9999, background: dark ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.18)' }} />
               </div>
-            ))}
-          </div>
 
-          <p style={{ fontSize: 13, color: sub, marginTop: 16, lineHeight: '18px' }}>
-            All financial nudges are on by default. Toggle off any you don't need.
-          </p>
-        </div>
-      </div>
-      <BottomBar onBack={onBack} onNext={onContinue} nextLabel="Next" dark={dark} dotInfo={dotInfo} />
+              <div className="onboarding-inner" style={{ paddingBottom: 40 }}>
+                <h3 style={{ fontSize: 17, fontWeight: 600, color: fg, textAlign: 'center', marginBottom: 4, marginTop: 8 }}>{sheetCat.label}</h3>
+                <p style={{ fontSize: 13, color: sub, textAlign: 'center', marginBottom: 20 }}>Choose which details you'd like us to watch for.</p>
+
+                <div style={{ borderRadius: 14, background: card, overflow: 'hidden', border: `1px solid ${sep}` }}>
+                  {sheetCat.subs.map(({ id: subId, label, sub: itemSub }, i) => {
+                    const checked = !!(subRules[sheetCat.id]?.[subId])
+                    return (
+                      <div key={subId}>
+                        {i > 0 && <div style={{ height: 1, background: sep, marginRight: 16, marginLeft: 16 }} />}
+                        <button
+                          onClick={() => onSetSubRule(sheetCat.id, subId, !checked)}
+                          style={{
+                            display: 'flex', alignItems: 'center', width: '100%',
+                            padding: '13px 16px', gap: 12, background: 'transparent',
+                            border: 'none', cursor: 'pointer', textAlign: 'left',
+                          }}
+                        >
+                          <div style={{ flex: 1 }}>
+                            <div style={{ fontSize: 15, fontWeight: 500, color: fg, lineHeight: '20px' }}>{label}</div>
+                            <div style={{ fontSize: 12, color: sub, lineHeight: '16px', marginTop: 2 }}>{itemSub}</div>
+                          </div>
+                          <div style={{
+                            width: 22, height: 22, borderRadius: 6, flexShrink: 0,
+                            background: checked ? fg : 'transparent',
+                            border: `2px solid ${checked ? fg : (dark ? 'rgba(255,255,255,0.3)' : 'rgba(0,0,0,0.25)')}`,
+                            display: 'flex', alignItems: 'center', justifyContent: 'center',
+                            transition: 'background 0.15s, border-color 0.15s',
+                          }}>
+                            {checked && <Check style={{ width: 13, height: 13, color: dark ? '#000' : '#fff' }} strokeWidth={3} />}
+                          </div>
+                        </button>
+                      </div>
+                    )
+                  })}
+
+                  {/* Others row */}
+                  <div style={{ height: 1, background: sep, marginRight: 16, marginLeft: 16 }} />
+                  <div style={{ padding: '12px 16px', display: 'flex', alignItems: 'center', gap: 12 }}>
+                    <div style={{ flex: 1 }}>
+                      <div style={{ fontSize: 15, fontWeight: 500, color: fg, lineHeight: '20px', marginBottom: 6 }}>Others</div>
+                      <input
+                        type="text"
+                        placeholder="Add your own…"
+                        value={othersText[sheetCat.id] || ''}
+                        onChange={(e) => onSetOthers(sheetCat.id, e.target.value)}
+                        style={{
+                          width: '100%', fontSize: 14, color: fg,
+                          background: inputBg, border: `1px solid ${sep}`,
+                          borderRadius: 8, padding: '7px 10px',
+                          outline: 'none', fontFamily: 'inherit',
+                        }}
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <button
+                  onClick={() => setSheetCatId(null)}
+                  style={{
+                    width: '100%', height: 44, borderRadius: 9999, marginTop: 16,
+                    background: fg, color: dark ? '#000' : '#fff',
+                    fontSize: 15, fontWeight: 600, border: 'none', cursor: 'pointer',
+                  }}
+                >Done</button>
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
     </div>
   )
 }
@@ -461,29 +582,29 @@ function Screen5({ onDone, dark, dotInfo }) {
 
 // ─── Root ─────────────────────────────────────────────────────────────────────
 export default function OnboardingV2Mobile({ dark }) {
-  const [screen,   setScreen]   = useState(1)
-  const [selected, setSelected] = useState(['financial', 'identity', 'health', 'location'])
-  const [finRules, setFinRules] = useState({ bank: true, salary: true, cards: true })
-  const [nudge,    setNudge]    = useState('nudge')
-
-  const hasFinancial = selected.includes('financial')
+  const [screen, setScreen] = useState(1)
+  const [subRules, setSubRules] = useState(() => {
+    const r = {}
+    CATS_V2.forEach(({ id, subs }) => {
+      r[id] = {}
+      subs.forEach(({ id: sid }) => { r[id][sid] = false })
+    })
+    return r
+  })
+  const [othersText, setOthersText] = useState({})
 
   const navTo  = (s) => setScreen(s)
   const slide  = { initial: { opacity: 0, x: 24 }, animate: { opacity: 1, x: 0 }, exit: { opacity: 0, x: -24 }, transition: { duration: 0.22, ease: [0.32, 0.72, 0, 1] } }
-  const dotInfo = { screens: [1, 2, 4, 5], current: screen === 3 ? 2 : screen, onNav: navTo }
+  const dotInfo = { screens: [1, 2, 5], current: screen, onNav: navTo }
 
-  const toggleCat      = (id)     => setSelected((s) => s.includes(id) ? s.filter((x) => x !== id) : [...s, id])
-  const setFinRule     = (id, v)  => setFinRules((r) => ({ ...r, [id]: v }))
-  const handleAfterS2  = ()       => hasFinancial ? navTo(3) : navTo(4)
-  const handleBackS4   = ()       => hasFinancial ? navTo(3) : navTo(2)
+  const setSubRule = (catId, subId, val) => setSubRules((r) => ({ ...r, [catId]: { ...r[catId], [subId]: val } }))
+  const setOthers  = (catId, text)       => setOthersText((t) => ({ ...t, [catId]: text }))
 
   return (
     <div style={{ flex: 1, position: 'relative', overflow: 'hidden', fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", system-ui, sans-serif' }}>
       <AnimatePresence mode="wait">
         {screen === 1 && <motion.div key="v2-s1" {...slide} className="absolute inset-0"><Screen1 onContinue={() => navTo(2)} dark={dark} dotInfo={dotInfo} /></motion.div>}
-        {screen === 2 && <motion.div key="v2-s2" {...slide} className="absolute inset-0"><Screen2 selected={selected} onToggle={toggleCat} onContinue={handleAfterS2} onBack={() => navTo(1)} dark={dark} dotInfo={dotInfo} /></motion.div>}
-        {screen === 3 && <motion.div key="v2-s3" {...slide} className="absolute inset-0"><Screen3 finRules={finRules} onSetFinRule={setFinRule} onContinue={() => navTo(4)} onBack={() => navTo(2)} dark={dark} dotInfo={dotInfo} /></motion.div>}
-        {screen === 4 && <motion.div key="v2-s4" {...slide} className="absolute inset-0"><Screen4 nudge={nudge} onSetNudge={setNudge} onContinue={() => navTo(5)} onBack={handleBackS4} dark={dark} dotInfo={dotInfo} /></motion.div>}
+        {screen === 2 && <motion.div key="v2-s2" {...slide} className="absolute inset-0"><Screen2 subRules={subRules} onSetSubRule={setSubRule} othersText={othersText} onSetOthers={setOthers} onContinue={() => navTo(5)} onBack={() => navTo(1)} dark={dark} dotInfo={dotInfo} /></motion.div>}
         {screen === 5 && <motion.div key="v2-s5" {...slide} className="absolute inset-0"><Screen5 onDone={() => navTo(1)} dark={dark} dotInfo={dotInfo} /></motion.div>}
       </AnimatePresence>
     </div>
