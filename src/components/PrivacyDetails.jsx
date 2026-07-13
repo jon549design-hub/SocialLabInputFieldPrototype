@@ -61,8 +61,8 @@ export default function PrivacyDetails({ status, analysis, showLetter = true }) 
       )}
 
       <p className="pn-foot">
-        Mentioning who, where, and when together can make you more identifiable.
-        Nothing is sent until you choose to.
+        Details like these — who you are, your health, work, or money — can add up
+        to identify you. Nothing is sent until you choose to.
       </p>
     </>
   )

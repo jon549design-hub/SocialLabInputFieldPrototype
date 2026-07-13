@@ -5,8 +5,8 @@ import Composer from './components/Composer.jsx'
 import PrivacyNudge from './components/PrivacyNudge.jsx'
 import PrivacySheet from './components/PrivacySheet.jsx'
 import ThemeControl from './components/ThemeControl.jsx'
+import PersonaCard from './components/PersonaCard.jsx'
 import OnboardingVersion from './components/OnboardingVersion.jsx'
-import { ChatGPTMark, Spark } from './components/icons.jsx'
 import { DEFAULT_MODEL, DEFAULT_MODELS, MODEL_GROUPS, respond } from './data.js'
 import { DEFAULT_VERSION } from './versions.js'
 
@@ -27,13 +27,20 @@ export default function App() {
   const [onboardingView, setOnboardingView] = useState('mobile')
   const [s2variant, setS2variant] = useState('A')
   const [detailsOpen, setDetailsOpen] = useState(false) // mobile privacy sheet
-  const privacyMode = version === 'privacy-grade'
-    ? 'grade'
-    : version === 'privacy-color'
-      ? 'color'
-      : version === 'privacy-inline'
-        ? 'inline'
-        : 'off'
+  // Privacy reminders kick in from the second round on: the first message has
+  // little to secure, so we keep it clean and let the risk build with the
+  // conversation. (Rounds = how many messages the participant has already sent.)
+  const roundsSent = messages.filter((m) => m.role === 'user').length
+  const privacyActive = roundsSent >= 1
+  const privacyMode = !privacyActive
+    ? 'off'
+    : version === 'privacy-grade'
+      ? 'grade'
+      : version === 'privacy-color'
+        ? 'color'
+        : version === 'privacy-inline'
+          ? 'inline'
+          : 'off'
   const showPrivacySummary = privacyMode === 'grade' || privacyMode === 'color'
   const showLetter = privacyMode === 'grade'
   const mainRef = useRef(null)
@@ -42,9 +49,8 @@ export default function App() {
   const isConversation = messages.length > 0
   const nextId = () => ++idRef.current
   const productName = productTheme === 'chatgpt' ? 'ChatGPT' : 'Claude'
-  const BrandMark = productTheme === 'chatgpt' ? ChatGPTMark : Spark
   const greetingText = productTheme === 'chatgpt' ? "What's on the agenda today?" : 'How can I help you today?'
-  const placeholder = isConversation ? `Reply to ${productName}...` : `Message ${productName}`
+  const placeholder = isConversation ? 'Reply...' : 'Message'
   const modelOptions = MODEL_GROUPS[productTheme]
 
   // Close the mobile details sheet once the draft (and its analysis) clears.
@@ -72,6 +78,8 @@ export default function App() {
 
   async function handleSend(text) {
     const typingId = nextId()
+    // The participant's message number (1 = their first) drives the coach script.
+    const turn = messages.filter((m) => m.role === 'user').length + 1
     // Add the user turn + an empty assistant turn (renders the typing dots).
     setMessages((m) => [
       ...m,
@@ -80,7 +88,7 @@ export default function App() {
     ])
 
     const modelName = modelOptions.find((m) => m.id === model)?.name
-    const reply = await respond(text, { model: modelName })
+    const reply = await respond(text, { model: modelName, turn })
 
     // Replace the placeholder assistant turn with the real reply.
     setMessages((m) => m.map((msg) => (msg.id === typingId ? { ...msg, text: reply } : msg)))
@@ -123,10 +131,7 @@ export default function App() {
       ) : (
         <>
           <header className="topbar">
-            <div className="brand">
-              <BrandMark className="spark" style={{ width: 20, height: 20 }} />
-              <span>{productName}</span>
-            </div>
+            <PersonaCard />
           </header>
 
           <main className="main" ref={mainRef}>
@@ -157,6 +162,7 @@ export default function App() {
                   productName={productName}
                   productTheme={productTheme}
                   privacyMode={privacyMode}
+                  inlineVersion={version === 'privacy-inline'}
                   onPrivacyChange={setPrivacy}
                   onOpenDetails={() => setDetailsOpen(true)}
                   onAttach={() => console.log('[attach] open file picker')}

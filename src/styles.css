@@ -1387,3 +1387,62 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 @media (min-width: 641px) {
   .sheet-overlay { display: none; }
 }
+
+/* ─── Persona card (testing aid) — safe to delete this whole block ─────────── */
+.persona-card { position: relative; }
+.persona-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 32px;
+  padding: 0 12px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--text-muted);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  box-shadow: var(--shadow);
+}
+.persona-toggle:hover { background: var(--hover); }
+.persona-dot {
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  background: var(--accent);
+}
+.persona-chevron { font-size: 8px; color: var(--text-faint); }
+.persona-body {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  z-index: 40;
+  width: 320px;
+  max-width: calc(100vw - 32px);
+  padding: 16px 18px;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: var(--surface);
+  box-shadow: var(--focus-shadow);
+  color: var(--text);
+}
+.persona-heading {
+  margin: 0 0 6px;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+.persona-intro { margin: 0 0 12px; font-size: 14px; line-height: 1.5; }
+.persona-facts {
+  margin: 0 0 12px;
+  padding-left: 18px;
+  font-size: 13.5px;
+  line-height: 1.55;
+  color: var(--text);
+}
+.persona-facts li { margin-bottom: 5px; }
+.persona-goal { margin: 0; font-size: 13.5px; line-height: 1.5; color: var(--text-muted); }
+.persona-goal strong { color: var(--text); }
+/* ─── end persona card ────────────────────────────────────────────────────── */
