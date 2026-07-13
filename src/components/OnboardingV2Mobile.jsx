@@ -5,7 +5,6 @@ import {
   Briefcase, Paintbrush, Star, FileText, Check,
   ShieldCheck, Zap, MessageSquare, Globe,
 } from 'lucide-react'
-import { Spark } from './icons.jsx'
 
 // ─── Design tokens ────────────────────────────────────────────────────────────
 const ACCENT    = '#d97757'
@@ -115,12 +114,6 @@ function Screen1({ onContinue, dark, dotInfo }) {
     <div className="absolute inset-0 bg-background" style={{ display: 'flex', flexDirection: 'column' }}>
       <div style={{ flex: 1, overflowY: 'auto', paddingBottom: 110 }}>
         <div className="onboarding-inner" style={{ paddingTop: 28, paddingBottom: 20 }}>
-
-          {/* Mini Claude topbar */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: 7, marginBottom: 20 }}>
-            <Spark style={{ width: 18, height: 18, color: ACCENT }} />
-            <span style={{ fontSize: 16, fontWeight: 600, color: fg, letterSpacing: '-0.2px' }}>Claude</span>
-          </div>
 
           {/* Greeting */}
           <p style={{ fontSize: 20, fontWeight: 600, color: fg, marginBottom: 20, lineHeight: 1.25, letterSpacing: '-0.3px' }}>
