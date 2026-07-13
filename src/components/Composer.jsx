@@ -55,6 +55,7 @@ export default function Composer({
   onPrivacyChange,
   onOpenDetails,
   privacyMode = 'off',
+  inlineVersion = false,
   placeholder = 'How can I help you today?',
   productName = 'Claude',
   productTheme = 'claude',
@@ -315,7 +316,7 @@ export default function Composer({
 
   const readyFindings = status === 'ready' ? result?.findings ?? [] : null
   const autoVisibleFindings = readyFindings?.filter((finding) => autoCategories.has(finding.category))
-  const autoHighlightingActive = inlineNudges && autoAnonymizationEnabled
+  const autoHighlightingActive = inlineNudges && autoAnonymizationEnabled && autoAnonymizationConfigured
   const visibleFindings = autoHighlightingActive
     ? (showAnonymizedWords ? autoVisibleFindings : null)
     : readyFindings
@@ -385,7 +386,7 @@ export default function Composer({
             <Plus />
           </button>
 
-          {inlineNudges && autoAnonymizationConfigured && (
+          {inlineVersion && (
             <AnonymizationControl
               enabled={autoAnonymizationEnabled}
               onEnabledChange={setAutoAnonymizationEnabled}
@@ -431,7 +432,7 @@ export default function Composer({
       </form>
 
       <AutoAnonymizationModal
-        open={inlineNudges && anonymizationModalMode !== null}
+        open={inlineVersion && anonymizationModalMode !== null}
         mode={anonymizationModalMode ?? 'setup'}
         enabledCategories={draftAutoCategories}
         showAnonymizedWords={draftShowAnonymizedWords}
